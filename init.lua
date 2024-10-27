@@ -17,14 +17,15 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = false
 -- Switch to normal mode with jk
 vim.keymap.set({'i','x'}, 'jk', '<Esc>', {desc = 'switch to normal mode'})
--- Copy to and paste from system clipboard
+-- Copy t-o and paste from system clipboard
 vim.keymap.set({'n', 'x'}, 'gy', '"+y')
 vim.keymap.set({'n', 'x'}, 'gp', '"+p')
 --Save current buffer
 vim.keymap.set('n','<Space>j',':w<CR>')
+--Save all buffers
 vim.keymap.set('n','<Space>jk',':wa<CR>')
 --Reset config
-vim.keymap.set('n','<Space>k',':source %<CR>')
+vim.keymap.set('n','<Space>kk',':source %<CR>')
 --Exit current buffer
 vim.keymap.set('n','<Space>h',':q<CR>')
 
@@ -39,24 +40,32 @@ vim.keymap.set('n','L','<c-w>l')
 -- Split size adjustment
 vim.keymap.set('n','<c-h>','<c-w><')
 vim.keymap.set('n','<c-l>','<c-w>>')
-vim.keymap.set('n','+','<c-w>+')
-vim.keymap.set('n','-','<c-w>-')
+vim.keymap.set('n','<c-j>','<c-w>+')
+vim.keymap.set('n','<c-k>','<c-w>-')
+--Panel Movement
+vim.keymap.set('n','`h','<c-w>H')
+vim.keymap.set('n','`j','<c-w>J')
+vim.keymap.set('n','`k','<c-w>K')
+vim.keymap.set('n','`l','<c-w>L')
 --Tab Stuff
-vim.keymap.set('n','gy',':tabnew %<CR>')
+vim.keymap.set('n','gn',':tabnew<CR>')
 vim.keymap.set('n','gh','gt')
 vim.keymap.set('n','gy','gT')
 vim.keymap.set('n','ty',':tabclose<CR>')
 --File Navigation toggle
 vim.keymap.set('n','O',':Oil<CR>')
+vim.keymap.set('n','<c-o>',':Oil --float<CR>')
 --Toggle Zenmode
 vim.keymap.set('n','qq',':ZenMode<CR>')
+--Toggle Limelight
+vim.keymap.set('n','mm',':Limelight!!<CR>')
 
 --Commands to run on file start
-vim.api.nvim_create_autocmd("BufReadPost", {
+vim.api.nvim_create_autocmd("BufRead", {
   pattern = "*",
 	callback = function()
     -- Lua code to run on every file open
-		print("File Opened in Lua!")
+		vim.cmd(':Limelight')
   end,
 })
 
@@ -68,7 +77,7 @@ if not vim.loop.fs_stat(lazypath) then
     'git',
     'clone',
     '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
+    'https://github.com',
     '--branch=stable', -- latest stable release
     lazypath,
   })
@@ -119,18 +128,26 @@ require('lazy').setup({
 		opts = {
 			backdrop = 0.5,
 			window = {
-				width = 80,
+				width = 90,
 			}
-		}	
+	}	
   },
 	{ 'junegunn/limelight.vim' },
+	{ 'shaunsingh/moonlight.nvim' },
+	{ 'feline-nvim/feline.nvim' },
+	{ 'nvim-tree/nvim-web-devicons' },
 })
 
 
-
--- Apply tokyonight theme
+--/////THEMES///////////////////////////////////////////////////////////
 vim.opt.termguicolors = true
-vim.cmd.colorscheme('tokyonight')
+-- Apply tokyonight theme
+--vim.cmd.colorscheme('tokyonight')
+-- Apply moonlight theme
+require('moonlight').set()
+require('feline').setup() 
+
+
 
 --Telescope settings
 local builtin = require('telescope.builtin')

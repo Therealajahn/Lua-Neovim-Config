@@ -19,6 +19,7 @@ return {
 			buflisted = false,
 			bufhidden = "hide",
 		},
+
 		-- Window-local options to use for oil buffers
 		win_options = {
 			wrap = false,
@@ -64,8 +65,8 @@ return {
 		keymaps = {
 			["g?"] = "actions.show_help",
 			["<CR>"] = "actions.select",
-			["<C-s>"] = { "actions.select", opts = { vertical = true }, desc = "Open the entry in a vertical split" },
-			["<C-h>"] = { "actions.select", opts = { horizontal = true }, desc = "Open the entry in a horizontal split" },
+			["<C-e>"] = { "actions.select", opts = { vertical = true, split = "belowright" }, desc = "Open the entry in a vertical split" },
+			["<C-r>"] = { "actions.select", opts = { horizontal = true, split = "belowright" }, desc = "Open the entry in a horizontal split" },
 			["<C-t>"] = { "actions.select", opts = { tab = true }, desc = "Open the entry in new tab" },
 			["<C-p>"] = "actions.preview",
 			["<C-c>"] = "actions.close",
