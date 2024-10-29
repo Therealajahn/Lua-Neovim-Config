@@ -17,6 +17,9 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = false
 -- Switch to normal mode with jk
 vim.keymap.set({'i','x'}, 'jk', '<Esc>', {desc = 'switch to normal mode'})
+-- Change indent(conflict with surround)
+vim.keymap.set('x','7','<')
+vim.keymap.set('x','8','>')
 -- Copy t-o and paste from system clipboard
 vim.keymap.set({'n', 'x'}, 'gy', '"+y')
 vim.keymap.set({'n', 'x'}, 'gp', '"+p')
@@ -53,8 +56,8 @@ vim.keymap.set('n','gh','gt')
 vim.keymap.set('n','gy','gT')
 vim.keymap.set('n','ty',':tabclose<CR>')
 --File Navigation toggle
-vim.keymap.set('n','O',':Oil<CR>')
-vim.keymap.set('n','<c-o>',':Oil --float<CR>')
+vim.keymap.set('n','OU',':Oil<CR>')
+vim.keymap.set('n','<c-ou>',':Oil --float<CR>')
 --Toggle Zenmode
 vim.keymap.set('n','qq',':ZenMode<CR>')
 --Toggle Limelight
@@ -136,6 +139,26 @@ require('lazy').setup({
 	{ 'shaunsingh/moonlight.nvim' },
 	{ 'feline-nvim/feline.nvim' },
 	{ 'nvim-tree/nvim-web-devicons' },
+	{
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+        require("nvim-surround").setup({
+            -- Configuration here, or leave empty to use defaults
+        })
+    end
+},
+{
+    "NStefan002/visual-surround.nvim",
+    config = function()
+        require("visual-surround").setup({
+            -- your config
+        })
+    end,
+    -- or if you don't want to change defaults
+    -- config = true
+},
 })
 
 
