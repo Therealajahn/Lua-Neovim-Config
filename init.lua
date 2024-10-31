@@ -28,7 +28,14 @@ vim.keymap.set('n','<Space>j',':w<CR>')
 --Save all buffers
 vim.keymap.set('n','<Space>jk',':wa<CR>')
 --Reset config
-vim.keymap.set('n','<Space>kk',':source %<CR>')
+vim.keymap.set('n','<Space>jk',
+	function()
+		vim.cmd('source ' .. vim.env.MYVIMRC)
+		vim.cmd('Lazy sync')
+	end,
+	{ desc= 'Reload init.lua and Lazy.nvim' }
+)
+
 --Exit current buffer
 vim.keymap.set('n','<Space>h',':q<CR>')
 
@@ -70,6 +77,19 @@ vim.api.nvim_create_autocmd("BufRead", {
     -- Lua code to run on every file open
 		vim.cmd(':Limelight')
   end,
+})
+--An autocommand for oil
+--(switches the directory of the current buffer to the path of oil...)
+--(... so that I can do alley oops with both oil and telescope)
+vim.api.nvim_create_autocmd("BufEnter",{
+	pattern = 'oil://*',
+	callback = function()
+		local oil = require('oil')
+		local dir = oil.get_current_dir()
+		if dir then
+			vim.cmd('lcd ' .. dir)
+		end
+	end
 })
 
 -- LAZYVIM (plugin manager)
@@ -159,6 +179,7 @@ require('lazy').setup({
     -- or if you don't want to change defaults
     -- config = true
 },
+{ 'metakirby5/codi.vim' },
 })
 
 
