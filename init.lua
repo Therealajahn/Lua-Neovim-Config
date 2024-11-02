@@ -1,4 +1,7 @@
---Remember hidden buffers
+vim.g.limelight_conceal_guifg = "#5c3e59"
+vim.g.limelight_conceal_guibg = "#5c3e59"
+
+--Remember hidden buffers(tabs aren't erased when not in view)
 vim.o.hidden = true
 --Adjusts how long to wait for potential next key of a combo
 vim.o.timeoutlen = 150
@@ -117,9 +120,12 @@ vim.opt.rtp:prepend(lazypath)  -- Prepend the runtime path for lazy.nvim
 -- Lazy.nvim setup to install plugins
 
 require('lazy').setup({
-  { 'folke/tokyonight.nvim'},
+  { 'folke/tokyonight.nvim',
+		enabled = true
+	},
 	{ 'nvim-telescope/telescope.nvim', tag = '0.1.8',
-		dependencies = { 'nvim-lua/plenary.nvim' }
+		dependencies = { 'nvim-lua/plenary.nvim' },
+		enabled = true
 	},
 	{ import = 'plugins/oil' },
 	{ "folke/zen-mode.nvim",
@@ -128,21 +134,85 @@ require('lazy').setup({
 			window = {
 				width = 90,
 			}
-		}	
+		},
+		enabled = true
   },
-	{ 'junegunn/limelight.vim' },
-	{ 'shaunsingh/moonlight.nvim' },
+	{ 'junegunn/limelight.vim',
+		enabled = true
+	},
+	{ 'shaunsingh/moonlight.nvim',
+		enabled = true
+	},
+	{
+		'maxmx03/fluoromachine.nvim',
+		lazy = false,
+		priority = 1000,
+		config = function ()
+		 local fm = require 'fluoromachine'
+
+		 fm.setup {
+				glow = false,
+				theme = 'fluoromachine',
+				transparent = true,
+		 }
+
+		end
+	},
+	{
+			"nvim-treesitter/nvim-treesitter",
+			build = ":TSUpdate",
+			config = function () 
+				local configs = require("nvim-treesitter.configs")
+
+				configs.setup({
+						ensure_installed = 
+						{ "c", "lua", "vim", "vimdoc",
+						"query", "elixir", "heex", "javascript", "html" },
+						sync_install = true,
+						highlight = { enable = true },
+						indent = { enable = true },  				})
+			end,
+		enabled = true
+	 },
+	{ 
+		'olivercederborg/poimandres.nvim',
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require('poimandres').setup {
+				-- leave this setup function empty for default config
+				-- or refer to the configuration section
+				-- for configuration options
+			}
+		end,
+	},
+	{
+		'nvim-lualine/lualine.nvim',
+		dependencies = { 'nvim-tree/nvim-web-devicons' }
+	}
+	--newplugin
 })
 
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "javascript" }, -- Ensure JavaScript is installed
+  highlight = {
+    enable = true,          -- Enable Treesitter for syntax highlighting
+    additional_vim_regex_highlighting = false, -- Disable standard syntax for better Treesitter performance
+  },
+}
 
 --/////THEMES///////////////////////////////////////////////////////////
 vim.opt.termguicolors = true
 -- Apply tokyonight theme
 --vim.cmd.colorscheme('tokyonight')
+vim.cmd.colorscheme('fluoromachine')
+--vim.cmd.colorscheme('moonlight')
+--vim.cmd.colorscheme('poimandres')
 -- Apply moonlight theme
-require('moonlight').set()
+--require('moonlight').set()
 
-
+--Start Lualine
+require('lualine').setup()
 
 --Telescope settings
 local builtin = require('telescope.builtin')
