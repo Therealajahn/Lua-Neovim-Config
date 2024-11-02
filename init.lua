@@ -12,7 +12,6 @@ vim.wo.relativenumber = true
 -- Enable mouse
 vim.opt.mouse = 'a'
 
-
 -- Ignore case for '/' search...
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -42,9 +41,9 @@ vim.keymap.set('n','<Space>jkl',
 	end,
 	{ desc= 'Reload init.lua and Lazy.nvim' }
 )
-
 --Exit current buffer
 vim.keymap.set('n','<Space>h',':q<CR>')
+vim.keymap.set('n','<Space>y',':q<CR>:q<CR>')
 vim.keymap.set('n','<Space>hn',':q!<CR>')
 
 -- Vertical and Horizontal split
@@ -55,6 +54,12 @@ vim.keymap.set('n','H','<c-w>h')
 vim.keymap.set('n','J','<c-w>j')
 vim.keymap.set('n','K','<c-w>k')
 vim.keymap.set('n','L','<c-w>l')
+
+-- Split nav to ZenMode
+vim.keymap.set('n','FH',':ZenMode<CR><c-w>h:ZenMode<CR>')
+vim.keymap.set('n','FJ',':ZenMode<CR><c-w>j:ZenMode<CR>')
+vim.keymap.set('n','FK',':ZenMode<CR><c-w>k:ZenMode<CR>')
+vim.keymap.set('n','FL',':ZenMode<CR><c-w>l:ZenMode<CR>')
 -- Split size adjustment
 vim.keymap.set('n','<c-h>','<c-w><')
 vim.keymap.set('n','<c-l>','<c-w>>')
@@ -84,9 +89,10 @@ vim.api.nvim_create_autocmd("BufRead", {
   pattern = "*",
 	callback = function()
     -- Lua code to run on every file open
-		vim.cmd(':Limelight!!')
+		vim.cmd('Limelight!!<CR>')
   end,
 })
+
 --An autocommand for oil
 --(switches the directory of the current buffer to the path of oil...)
 --(... so that I can do alley oops with both oil and telescope)
@@ -100,6 +106,39 @@ vim.api.nvim_create_autocmd("BufEnter",{
 		end
 	end
 })
+--Keymaps for Luasnip
+local ls = require("luasnip")
+vim.keymap.set({"i", "s"}, "j'", function()
+  if ls.expand_or_jumpable() then
+    ls.expand_or_jump()
+  end
+end, {silent = true})
+
+vim.keymap.set({"i", "s"}, "k'", function()
+  if ls.jumpable(-1) then
+    ls.jump(-1)
+  end
+end, {silent = true})
+--Keymaps for CMP(Autocorrect)
+local cmp = require("cmp")
+
+cmp.setup({
+  mapping = {
+    -- Use <Tab> to select the next suggestion
+    ["<Tab>"] = cmp.mapping.select_next_item(),
+    -- Use <S-Tab> to select the previous suggestion
+    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+    -- Use <CR> (Enter) to confirm a suggestion
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    -- Use <C-e> to abort the selection menu
+    ["<C-e>"] = cmp.mapping.close(),
+  },
+  sources = {
+    { name = "buffer" },
+    { name = "spell" },  -- Spell check source
+  },
+})
+
 
 -- LAZYVIM (plugin manager)
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -155,6 +194,7 @@ require('lazy').setup({
 				theme = 'fluoromachine',
 				transparent = true,
 		 }
+--
 
 		end
 	},
@@ -189,6 +229,30 @@ require('lazy').setup({
 	{
 		'nvim-lualine/lualine.nvim',
 		dependencies = { 'nvim-tree/nvim-web-devicons' }
+	},
+	{
+		"L3MON4D3/LuaSnip",
+		-- follow latest release.
+		version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+		-- install jsregexp (optional!).
+		build = "make install_jsregexp",
+		dependencies = { "rafamadriz/friendly-snippets" },
+	},
+	{
+		"hrsh7th/nvim-cmp",
+		dependencies = {
+			"hrsh7th/cmp-buffer",
+			"f3fora/cmp-spell"
+		},
+		config = function()
+			local cmp = require("cmp")
+			cmp.setup({
+				sources = {
+					{ name = "buffer" },
+					{ name = "spell" },
+				},
+			})
+		end,
 	}
 	--newplugin
 })
@@ -213,6 +277,13 @@ vim.cmd.colorscheme('fluoromachine')
 
 --Start Lualine
 require('lualine').setup()
+
+--Install VScode snippets 
+require("luasnip.loaders.from_vscode").lazy_load()
+--Enable Spellcheck
+vim.cmd([[
+  autocmd FileType lua,javascript,markdown,text,gitcommit setlocal spell
+]])
 
 --Telescope settings
 local builtin = require('telescope.builtin')
