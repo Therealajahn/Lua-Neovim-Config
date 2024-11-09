@@ -11,7 +11,6 @@ vim.opt.number = true
 vim.wo.relativenumber = true
 -- Enable mouse
 vim.opt.mouse = 'a'
-
 -- Ignore case for '/' search...
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -20,7 +19,7 @@ vim.opt.wrap = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = false
--- Switch to normal mode with jk
+-- Switch to normal mode 
 vim.keymap.set({'i','x'}, 'jk', '<Esc>', {desc = 'switch to normal mode'})
 -- Change indent(conflict with surround)
 vim.keymap.set('x','7','<')
@@ -89,7 +88,7 @@ vim.api.nvim_create_autocmd("BufRead", {
   pattern = "*",
 	callback = function()
     -- Lua code to run on every file open
-		vim.cmd('Limelight!!<CR>')
+		vim.cmd('Limelight!!')
   end,
 })
 
@@ -106,40 +105,23 @@ vim.api.nvim_create_autocmd("BufEnter",{
 		end
 	end
 })
+
 --Keymaps for Luasnip
 local ls = require("luasnip")
-vim.keymap.set({"i", "s"}, "j'", function()
+vim.keymap.set({"i", "s"}, "fn", function()
   if ls.expand_or_jumpable() then
     ls.expand_or_jump()
   end
 end, {silent = true})
 
-vim.keymap.set({"i", "s"}, "k'", function()
+vim.keymap.set({"i", "s"}, "fj", function()
   if ls.jumpable(-1) then
     ls.jump(-1)
   end
 end, {silent = true})
---Keymaps for CMP(Autocorrect)
-local cmp = require("cmp")
-
-cmp.setup({
-  mapping = {
-    -- Use <Tab> to select the next suggestion
-    ["<Tab>"] = cmp.mapping.select_next_item(),
-    -- Use <S-Tab> to select the previous suggestion
-    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-    -- Use <CR> (Enter) to confirm a suggestion
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-    -- Use <C-e> to abort the selection menu
-    ["<C-e>"] = cmp.mapping.close(),
-  },
-  sources = {
-    { name = "buffer" },
-    { name = "spell" },  -- Spell check source
-  },
-})
 
 
+ 
 -- LAZYVIM (plugin manager)
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 ---- Install lazy.nvim
@@ -194,8 +176,6 @@ require('lazy').setup({
 				theme = 'fluoromachine',
 				transparent = true,
 		 }
---
-
 		end
 	},
 	{
@@ -210,7 +190,7 @@ require('lazy').setup({
 						"query", "elixir", "heex", "javascript", "html" },
 						sync_install = true,
 						highlight = { enable = true },
-						indent = { enable = true },  				})
+						indent = { enable = true }, })
 			end,
 		enabled = true
 	 },
@@ -239,21 +219,22 @@ require('lazy').setup({
 		dependencies = { "rafamadriz/friendly-snippets" },
 	},
 	{
+		'barrett-ruth/live-server.nvim',
+		build = 'pnpm add -g live-server',
+		cmd = { 'LiveServerStart', 'LiveServerStop' },
+		config = true
+	},
+	{
 		"hrsh7th/nvim-cmp",
 		dependencies = {
-			"hrsh7th/cmp-buffer",
-			"f3fora/cmp-spell"
+			"L3MON4D3/LuaSnip",           
+			"saadparwaiz1/cmp_luasnip",   
+			"hrsh7th/cmp-path",            
+			"hrsh7th/cmp-nvim-lsp",        
+			"hrsh7th/cmp-buffer", 
 		},
-		config = function()
-			local cmp = require("cmp")
-			cmp.setup({
-				sources = {
-					{ name = "buffer" },
-					{ name = "spell" },
-				},
-			})
-		end,
-	}
+	},
+	{ 'neovim/nvim-lspconfig' },
 	--newplugin
 })
 
@@ -280,10 +261,55 @@ require('lualine').setup()
 
 --Install VScode snippets 
 require("luasnip.loaders.from_vscode").lazy_load()
---Enable Spellcheck
+--Enable 
 vim.cmd([[
   autocmd FileType lua,javascript,markdown,text,gitcommit setlocal spell
 ]])
+--CMD Settings
+local lspconfig = require('lspconfig')
+lspconfig.ts_ls.setup({})
+
+--TODO: install some lsp language servers and get it working with cmp
+--(to check if working use :CmpStatus command
+--local cmp = require("cmp")
+--local luasnip = require("luasnip")
+
+cmp.setup({
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },  		
+		
+  mapping = {
+    ["<j'>"] = cmp.mapping.complete(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),  -- Confirm selection
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  },
+  sources = {
+    { name = "nvim_lsp" },
+    { name = "luasnip" },  -- LuaSnip source
+    { name = "buffer" },
+    { name = "path" },
+  },
+})
 
 --Telescope settings
 local builtin = require('telescope.builtin')
