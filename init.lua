@@ -24,10 +24,25 @@ vim.keymap.set({'i','x'}, 'jk', '<Esc>', {desc = 'switch to normal mode'})
 -- Change indent(conflict with surround)
 vim.keymap.set('x','7','<')
 vim.keymap.set('x','8','>')
+-- Remap 'd' to black hole register
+vim.keymap.set('n','d','"_d',{ noremap = true })
+vim.keymap.set('n','dd','"_dd',{ noremap = true })
 -- Copy t-o and paste from system clipboard
 vim.keymap.set({'n', 'x'}, 'gy', '"+y')
 vim.keymap.set({'n', 'x'}, 'gp', '"+p')
---Save current buffer
+vim.keymap.set({'n', 'x'}, 'gP', '"+P')
+vim.keymap.set({'n', 'x'}, 'mm',function()
+	vim.cmd('normal! V')
+	vim.cmd('normal! "+yy')
+	vim.cmd('normal! dd')
+	end
+)
+vim.keymap.set({'n', 'x'}, 'MM',function()
+	vim.cmd('normal! "+y')
+	vim.cmd('normal! gv')
+	vim.cmd('normal! d')
+	end
+)
 vim.keymap.set('n','<Space>j',':w<CR>')
 --Save all buffers
 vim.keymap.set('n','<Space>jk',':wa<CR>')
@@ -79,9 +94,9 @@ vim.keymap.set('n','ty',':tabclose<CR>')
 vim.keymap.set('n','OU',':Oil<CR>')
 vim.keymap.set('n','<c-ou>',':Oil --float<CR>')
 --Toggle Zenmode
-vim.keymap.set('n','qq',':ZenMode<CR><CR>')
+vim.keymap.set('n','FF',':ZenMode<CR><CR>')
 --Toggle Limelight
-vim.keymap.set('n','mm',':Limelight!!<CR>')
+vim.keymap.set('n','LL',':Limelight!!<CR>')
 
 --Commands to run on file start
 vim.api.nvim_create_autocmd("BufRead", {
@@ -235,6 +250,15 @@ require('lazy').setup({
 		},
 	},
 	{ 'neovim/nvim-lspconfig' },
+	{
+		"icholy/lsplinks.nvim",
+		config = function()
+				local lsplinks = require("lsplinks")
+				lsplinks.setup()
+				vim.keymap.set("n", "gx", lsplinks.gx)
+		end
+	},
+	{ 'vimwiki/vimwiki' },
 	--newplugin
 })
 
@@ -266,13 +290,13 @@ vim.cmd([[
   autocmd FileType lua,javascript,markdown,text,gitcommit setlocal spell
 ]])
 --CMD Settings
-local lspconfig = require('lspconfig')
-lspconfig.ts_ls.setup({})
-
 --TODO: install some lsp language servers and get it working with cmp
 --(to check if working use :CmpStatus command
---local cmp = require("cmp")
---local luasnip = require("luasnip")
+--local lspconfig = require('lspconfig')
+--lspconfig.ts_ls.setup({})
+
+local cmp = require("cmp")
+local luasnip = require("luasnip")
 
 cmp.setup({
   snippet = {
