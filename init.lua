@@ -1,35 +1,34 @@
 vim.g.limelight_conceal_guifg = "#5c3e59"
-vim.g.limelight_conceal_guibg = "#5c3e59"
-
+--Make sure gq doesnt join lines
+vim.opt.formatoptions:remove('j')
+vim.opt.formatoptions:append('t')
+vim.opt.virtualedit = 'all' 
 --Remember hidden buffers(tabs aren't erased when not in view)
 vim.o.hidden = true
 --Adjusts how long to wait for potential next key of a combo
-vim.o.timeoutlen = 150
+vim.o.timeoutlen = 150 
 -- Static line numbers
 vim.opt.number = true
 -- Set relative line numbers
-vim.wo.relativenumber = true
+vim.wo.relativenumber = true;
 -- Enable mouse
 vim.opt.mouse = 'a'
 -- Ignore case for '/' search...
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.hlsearch = true
-vim.opt.wrap = true
+--vim.opt.wrap = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = false
 -- Switch to normal mode 
 vim.keymap.set({'i','x'}, 'jk', '<Esc>', {desc = 'switch to normal mode'})
--- Change indent(conflict with surround)
-vim.keymap.set('x','7','<')
-vim.keymap.set('x','8','>')
 -- Remap 'd' to black hole register
 vim.keymap.set('n','d','"_d',{ noremap = true })
 vim.keymap.set('n','dd','"_dd',{ noremap = true })
 -- Copy t-o and paste from system clipboard
 vim.keymap.set({'n', 'x'}, 'gy', '"+y')
-vim.keymap.set({'n', 'x'}, 'gp', '"+p')
+vim.keymap.set({'n', 'x'}, 'gy', '"+y')
 vim.keymap.set({'n', 'x'}, 'gP', '"+P')
 vim.keymap.set({'n', 'x'}, 'mm',function()
 	vim.cmd('normal! V')
@@ -70,10 +69,10 @@ vim.keymap.set('n','K','<c-w>k')
 vim.keymap.set('n','L','<c-w>l')
 
 -- Split nav to ZenMode
-vim.keymap.set('n','FH',':ZenMode<CR><c-w>h:ZenMode<CR>')
-vim.keymap.set('n','FJ',':ZenMode<CR><c-w>j:ZenMode<CR>')
-vim.keymap.set('n','FK',':ZenMode<CR><c-w>k:ZenMode<CR>')
-vim.keymap.set('n','FL',':ZenMode<CR><c-w>l:ZenMode<CR>')
+vim.keymap.set('n','fh',':ZenMode<CR><c-w>h:ZenMode<CR>')
+vim.keymap.set('n','fj',':ZenMode<CR><c-w>j:ZenMode<CR>')
+vim.keymap.set('n','fk',':ZenMode<CR><c-w>k:ZenMode<CR>')
+vim.keymap.set('n','fl',':ZenMode<CR><c-w>l:ZenMode<CR>')
 -- Split size adjustment
 vim.keymap.set('n','<c-h>','<c-w><')
 vim.keymap.set('n','<c-l>','<c-w>>')
@@ -87,16 +86,21 @@ vim.keymap.set('n','`l','<c-w>L')
 --Tab Stuff
 vim.keymap.set('n','gn',':tabnew<CR>')
 vim.keymap.set('n','gh','gt')
-vim.keymap.set('n','ghj',':ZenMode<CR><CR>gt:ZenMode<CR><CR>')
-vim.keymap.set('n','gy','gT')
+vim.keymap.set('n','ghj',':ZenMode<CR>gt:ZenMode<CR>')
+vim.keymap.set('n','gj','gT')
 vim.keymap.set('n','ty',':tabclose<CR>')
 --File Navigation toggle
-vim.keymap.set('n','OU',':Oil<CR>')
-vim.keymap.set('n','<c-ou>',':Oil --float<CR>')
+vim.keymap.set('n','-',':Oil<CR>')
+vim.keymap.set('n','_',':Oil --float<CR>')
+vim.keymap.set('n','OP',':OilCopy')
 --Toggle Zenmode
-vim.keymap.set('n','FF',':ZenMode<CR><CR>')
+vim.keymap.set('n',',,',':ZenMode<CR><CR>')
 --Toggle Limelight
-vim.keymap.set('n','LL',':Limelight!!<CR>')
+vim.keymap.set('n',';;',':Limelight!!<CR>')
+--Paste into commands
+vim.keymap.set('c', '<C-p>', '<NOP>', { noremap = true })
+vim.keymap.set('c','\\','<c-r>"')
+vim.keymap.set('c','<c-p>','<c-r>+')
 
 --Commands to run on file start
 vim.api.nvim_create_autocmd("BufRead", {
@@ -259,11 +263,44 @@ require('lazy').setup({
 		end
 	},
 	{ 'vimwiki/vimwiki' },
+	{ 'jbyuki/venn.nvim' },
+	{
+    "jose-elias-alvarez/null-ls.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+        require("null-ls").setup()
+    end,
+	},
+	{
+  "allaman/emoji.nvim",
+  version = "1.0.0", -- optionally pin to a tag
+  ft = "markdown", -- adjust to your needs
+  dependencies = {
+    -- util for handling paths
+    "nvim-lua/plenary.nvim",
+    -- optional for nvim-cmp integration
+    "hrsh7th/nvim-cmp",
+    -- optional for telescope integration
+    "nvim-telescope/telescope.nvim",
+  },
+  opts = {
+    -- default is false, also needed for blink.cmp integration!
+    enable_cmp_integration = true,
+    -- is not vim.fn.stdpath("data") .. "/lazy/
+    -- plugin_path = vim.fn.expand("$HOME/plugins/"),
+  },
+  config = function(_, opts)
+    require("emoji").setup(opts)
+    -- optional for telescope integration
+    local ts = require('telescope').load_extension 'emoji'
+    vim.keymap.set('n', '<leader>se', ts.emoji, { desc = '[S]earch [E]moji' })
+  end,
+}
 	--newplugin
 })
 
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = { "javascript" }, -- Ensure JavaScript is installed
+  ensure_installed = { "javascript","tsx" }, -- Ensure JavaScript is installed
   highlight = {
     enable = true,          -- Enable Treesitter for syntax highlighting
     additional_vim_regex_highlighting = false, -- Disable standard syntax for better Treesitter performance
@@ -331,13 +368,52 @@ cmp.setup({
     { name = "nvim_lsp" },
     { name = "luasnip" },  -- LuaSnip source
     { name = "buffer" },
-    { name = "path" },
-  },
-})
+    { name = "path" },                 
+		{ name = "emoji" },
+  },                                   
+})                                     
+                                 
+-- venn.nvim: enable or disable keymappings
+        -- draw a line on HJKL keystokes
+        vim.keymap.set("v", "<Down>", "j:VBox<CR>v", {noremap = true})
+        vim.keymap.set("v", "<Up>", "k:VBox<CR>v", {noremap = true})
+        vim.keymap.set("v", "<Right>", "l:VBox<CR>v", {noremap = true})
+        vim.keymap.set("v", "<Left>", "h:VBox<CR>v", {noremap = true})
+        -- draw a box by pressing "f with visual selection
+        vim.keymap.set("v", "f", ":VBox<CR>", {noremap = true})
 
+-- toggle keymappings for venn using <leader>v
+vim.api.nvim_set_keymap('n', '<leader>v', ":lua Toggle_venn()<CR>", { noremap = true})
 --Telescope settings
 local builtin = require('telescope.builtin')
-vim.keymap.set('n', 'ff', builtin.find_files, { desc = 'Telescope find files' })
-vim.keymap.set('n', 'fg', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', 'fb', builtin.buffers, { desc = 'Telescope buffers' })
-vim.keymap.set('n', 'fh', builtin.help_tags, { desc = 'Telescope help tags' })
+vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
+vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+
+--Null/Prettier settings
+local null_ls = require("null-ls")
+null_ls.setup({
+ null_ls.builtins.formatting.prettier.with({
+            filetypes = { "lua","javascript", "javascriptreact", "typescript", "typescriptreact", "json", "html", "css", "yaml", "markdown" },
+        }),
+})
+	--format with Prettier on save
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+require("null-ls").setup({
+    sources = {
+        null_ls.builtins.formatting.prettier,
+    },
+    on_attach = function(client, bufnr)
+        if client.supports_method("textDocument/formatting") then
+            vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                group = augroup,
+                buffer = bufnr,
+                callback = function()
+                    vim.lsp.buf.format({ bufnr = bufnr })
+                end,
+            })
+        end
+    end,
+})
