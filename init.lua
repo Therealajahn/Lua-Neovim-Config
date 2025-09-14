@@ -1,19 +1,19 @@
 vim.g.limelight_conceal_guifg = "#5c3e59"
---Make sure gq doesnt join lines
+--make sure gq doesnt join lines
 vim.opt.formatoptions:remove('j')
 vim.opt.formatoptions:append('t')
 vim.opt.virtualedit = 'all' 
---Remember hidden buffers(tabs aren't erased when not in view)
+--remember hidden buffers(tabs aren't erased when not in view)
 vim.o.hidden = true
---Adjusts how long to wait for potential next key of a combo
+--adjusts how long to wait for potential next key of a combo
 vim.o.timeoutlen = 150 
--- Static line numbers
+-- static line numbers
 vim.opt.number = true
--- Set relative line numbers
+-- set relative line numbers
 vim.wo.relativenumber = true;
--- Enable mouse
+-- enable mouse
 vim.opt.mouse = 'a'
--- Ignore case for '/' search...
+-- ignore case for '/' search...
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.hlsearch = true
@@ -21,17 +21,17 @@ vim.opt.hlsearch = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = false
--- Switch to normal mode 
-vim.keymap.set({'i','x'}, 'jk', '<Esc>', {desc = 'switch to normal mode'})
--- Remap 'd' to black hole register
+-- switch to normal mode 
+vim.keymap.set({'i','x'}, 'jk', '<esc>', {desc = 'switch to normal mode'})
+-- remap 'd' to black hole register
 vim.keymap.set('n','d','"_d',{ noremap = true })
 vim.keymap.set('n','dd','"_dd',{ noremap = true })
--- Copy t-o and paste from system clipboard
+-- copy t-o and paste from system clipboard
 vim.keymap.set({'n', 'x'}, 'gy', '"+y')
 vim.keymap.set({'n', 'x'}, 'gy', '"+y')
-vim.keymap.set({'n', 'x'}, 'gP', '"+P')
+vim.keymap.set({'n', 'x'}, 'gp', '"+p')
 vim.keymap.set({'n', 'x'}, 'mm',function()
-	vim.cmd('normal! V')
+	vim.cmd('normal! v')
 	vim.cmd('normal! "+yy')
 	vim.cmd('normal! dd')
 	end
@@ -42,74 +42,87 @@ vim.keymap.set({'n', 'x'}, 'MM',function()
 	vim.cmd('normal! d')
 	end
 )
-vim.keymap.set('n','<Space>j',':w<CR>')
---Save all buffers
-vim.keymap.set('n','<Space>jk',':wa<CR>')
---Reset config
-vim.keymap.set('n','<Space>jkl',
+vim.keymap.set('n','<space>j',':w<cr>')
+--save all buffers
+vim.keymap.set('n','<space>jk',':wa<cr>')
+--reset config
+vim.keymap.set('n','<space>jkl',
 	function()
 		vim.cmd('w')
-		vim.cmd('source ' .. vim.env.MYVIMRC)
-		vim.cmd('Lazy sync')
+		vim.cmd('lazy sync')
 	end,
-	{ desc= 'Reload init.lua and Lazy.nvim' }
+	{ desc= 'reload init.lua and lazy.nvim' }
 )
---Exit current buffer
-vim.keymap.set('n','<Space>h',':q<CR>')
-vim.keymap.set('n','<Space>y',':q<CR>:q<CR>')
-vim.keymap.set('n','<Space>hn',':q!<CR>')
+--exit current buffer
+vim.keymap.set('n','<space>h',':q<cr>')
+vim.keymap.set('n','<space>y',':q<cr>:q<cr>')
+vim.keymap.set('n','<space>hn',':q!<cr>')
 
--- Vertical and Horizontal split
-vim.keymap.set('n','E',':vsp<CR>')
-vim.keymap.set('n','T',':sp<CR>')
--- Split navigation
+-- vertical and horizontal split
+vim.keymap.set('n','E',':vsp<cr>')
+vim.keymap.set('n','T',':sp<cr>')
+-- split navigation
 vim.keymap.set('n','H','<c-w>h')
 vim.keymap.set('n','J','<c-w>j')
 vim.keymap.set('n','K','<c-w>k')
 vim.keymap.set('n','L','<c-w>l')
 
--- Split nav to ZenMode
-vim.keymap.set('n','fh',':ZenMode<CR><c-w>h:ZenMode<CR>')
-vim.keymap.set('n','fj',':ZenMode<CR><c-w>j:ZenMode<CR>')
-vim.keymap.set('n','fk',':ZenMode<CR><c-w>k:ZenMode<CR>')
-vim.keymap.set('n','fl',':ZenMode<CR><c-w>l:ZenMode<CR>')
--- Split size adjustment
+-- split nav to ZenMode
+vim.keymap.set('n','fh',':ZenMode<cr><c-w>h:ZenMode<cr>')
+vim.keymap.set('n','fj',':ZenMode<cr><c-w>j:ZenMode<cr>')
+vim.keymap.set('n','fk',':ZenMode<cr><c-w>k:ZenMode<cr>')
+vim.keymap.set('n','fl',':ZenMode<cr><c-w>l:ZenMode<cr>')
+-- split size adjustment
 vim.keymap.set('n','<c-h>','<c-w><')
 vim.keymap.set('n','<c-l>','<c-w>>')
 vim.keymap.set('n','<c-j>','<c-w>+')
 vim.keymap.set('n','<c-k>','<c-w>-')
---Panel Movement
-vim.keymap.set('n','`h','<c-w>H')
-vim.keymap.set('n','`j','<c-w>J')
-vim.keymap.set('n','`k','<c-w>K')
-vim.keymap.set('n','`l','<c-w>L')
---Tab Stuff
-vim.keymap.set('n','gn',':tabnew<CR>')
+--panel movement
+vim.keymap.set('n','`h','<c-w>h')
+vim.keymap.set('n','`j','<c-w>j')
+vim.keymap.set('n','`k','<c-w>k')
+vim.keymap.set('n','`l','<c-w>l')
+--tab stuff
+vim.keymap.set('n','gn',':tabnew<cr>')
 vim.keymap.set('n','gh','gt')
-vim.keymap.set('n','ghj',':ZenMode<CR>gt:ZenMode<CR>')
-vim.keymap.set('n','gj','gT')
-vim.keymap.set('n','ty',':tabclose<CR>')
---File Navigation toggle
-vim.keymap.set('n','-',':Oil<CR>')
-vim.keymap.set('n','_',':Oil --float<CR>')
-vim.keymap.set('n','OP',':OilCopy')
---Toggle Zenmode
-vim.keymap.set('n',',,',':ZenMode<CR><CR>')
---Toggle Limelight
-vim.keymap.set('n',';;',':Limelight!!<CR>')
---Paste into commands
-vim.keymap.set('c', '<C-p>', '<NOP>', { noremap = true })
+vim.keymap.set('n','ghj',':ZenMode<cr>gt:ZenMode<cr>')
+vim.keymap.set('n','gj','gt')
+vim.keymap.set('n','ty',':tabclose<cr>')
+--file navigation toggle
+vim.keymap.set('n','-',':Oil<cr>')
+vim.keymap.set('n','_',':Oil --float<cr>')
+vim.keymap.set('n','op',':Oilcopy')
+--toggle ZenMode
+vim.keymap.set('n',',,',':ZenMode<cr><cr>')
+--toggle limelight
+vim.keymap.set('n',';;',':Limelight!!<cr>')
+--paste into commands
+vim.keymap.set('c', '<c-p>', '<nop>', { noremap = true })
 vim.keymap.set('c','\\','<c-r>"')
 vim.keymap.set('c','<c-p>','<c-r>+')
 
---Commands to run on file start
-vim.api.nvim_create_autocmd("BufRead", {
+--commands to run on file start
+vim.api.nvim_create_autocmd("bufread", {
   pattern = "*",
 	callback = function()
-    -- Lua code to run on every file open
+    -- lua code to run on every file open
 		vim.cmd('Limelight!!')
   end,
 })
+
+--Strudel commands
+--local strudel = require("strudel")
+
+vim.keymap.set("n", "<leader>sl", ":StrudelLaunch<cr>", { desc = "Launch Strudel" })
+vim.keymap.set("n", "<leader>sq", ":StrudelQuit<cr>", { desc = "Quit Strudel" })
+vim.keymap.set("n", "<leader>st", ":StrudelToggle<cr>", { desc = "Strudel Toggle Play/Stop" })
+vim.keymap.set("n", "<leader>su", ":StrudelUpdate<cr>", { desc = "Strudel Update" })
+vim.keymap.set("n", "<leader>ss", ":StrudelStop<cr>", { desc = "Strudel Stop Playback" })
+vim.keymap.set("n", "<leader>sb", ":StrudelSetBuffer<cr>", { desc = "Strudel set current buffer" })
+vim.keymap.set("n", "<leader>sx", ":StrudelExecute<cr>", { desc = "Strudel set current buffer and update" })
+
+
+
 
 --An autocommand for oil
 --(switches the directory of the current buffer to the path of oil...)
@@ -293,11 +306,102 @@ require('lazy').setup({
     require("emoji").setup(opts)
     -- optional for telescope integration
     local ts = require('telescope').load_extension 'emoji'
-    vim.keymap.set('n', '<leader>se', ts.emoji, { desc = '[S]earch [E]moji' })
+   vim.keymap.set('n', '<leader>se', ts.emoji, { desc = '[S]earch [E]moji' })
+  end,
+ },
+ {
+  "olrtg/nvim-emmet",
+  config = function()
+    vim.keymap.set({ "n", "v" }, '<leader>ee',
+				require('nvim-emmet').wrap_with_abbreviation)
+  end,
+ },
+ {
+  "gruvw/strudel.nvim",
+  build = "npm install",
+  config = function()
+    require("strudel").setup()
   end,
 }
 	--newplugin
 })
+
+ require("strudel").setup({
+  -- Strudel web user interface related options
+  ui = {
+    -- Maximise the menu panel
+    -- (optional, default: true)
+    maximise_menu_panel = true,
+    -- Hide the Strudel menu panel (and handle)
+    -- (optional, default: false)
+    hide_menu_panel = false,
+    -- Hide the default Strudel top bar (controls)
+    -- (optional, default: false)
+    hide_top_bar = false,
+    -- Hide the Strudel code editor
+    -- (optional, default: false)
+    hide_code_editor = false,
+    -- Hide the Strudel eval error display under the editor
+    -- (optional, default: false)
+    hide_error_display = false,
+  },
+  -- Set to `true` to automatically trigger the code evaluation after saving the buffer content
+  -- Only works if the playback was already started (doesn't start the playback on save)
+  -- (optional, default: false)
+  update_on_save = false,
+  -- Enable two-way cursor position sync between Neovim and Strudel editor.
+  -- (optional, default: true)
+  sync_cursor = true,
+  -- Report evaluation errors from Strudel as Neovim notifications.
+  -- (optional, default: true)
+  report_eval_errors = true,
+  -- Path to a custom CSS file to style the Strudel web editor (base64-encoded and injected at launch).
+  -- This allows you to override or extend the default Strudel UI appearance.
+  -- (optional, default: nil)
+  custom_css_file = "/path/to/your/custom.css",
+  -- Headless mode: set to `true` to run the browser without launching a window
+  -- (optional, default: false)
+  headless = false,
+  -- Path to the directory where Strudel browser user data (cookies, sessions, etc.) is stored
+  -- (optional, default: `~/.cache/strudel-nvim/`)
+  browser_data_dir = "~/.cache/strudel-nvim/",
+  -- Absolute path to a (chromium based) browser executable of choice
+  -- (optional, default: nil)
+})
+
+ vim.api.nvim_create_autocmd({ "FileType" }, { pattern =
+	"css,eruby,html,htmldjango,javascriptreact,less,pug,sass,scss,typescriptreact",
+	callback = function() vim.lsp.start({ cmd = { "emmet-language-server",
+		"--stdio" }, root_dir = vim.fs.dirname(vim.fs.find({ ".git" }, { upward =
+			true })[1]),
+		-- Read more about this options in the [vscode
+		-- docs](https://code.visualstudio.com/docs/editor/emmet#_emmet-configuration).
+		-- **Note:** only the options listed in the table are supported.
+		init_options = {
+			---@type table<string, string>
+			includeLanguages = {},
+			--- @type string[]
+			excludeLanguages = {},
+			--- @type string[]
+			extensionsPath = {},
+			--- @type table<string, any> [Emmet
+			--- Docs](https://docs.emmet.io/customization/preferences/)
+			preferences = {},
+			--- @type boolean Defaults to `true`
+			showAbbreviationSuggestions = true,
+			--- @type "always" | "never" Defaults to `"always"`
+			showExpandedAbbreviation = "always",
+			--- @type boolean Defaults to `false`
+			showSuggestionsAsSnippets = false,
+			--- @type table<string, any> [Emmet
+			--- Docs](https://docs.emmet.io/customization/syntax-profiles/)
+			syntaxProfiles = {},
+			--- @type table<string, string> [Emmet
+			--- Docs](https://docs.emmet.io/customization/snippets/#variables)
+			variables = {},
+			},
+		}) end,
+	})
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = { "javascript","tsx" }, -- Ensure JavaScript is installed
